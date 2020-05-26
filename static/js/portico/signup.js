@@ -50,18 +50,11 @@ $(function () {
     });
 
     if ($("#registration").length > 0) {
-        // Check if there is no input field with errors.
-        if ($('.help-inline:not(:empty)').length === 0) {
-            // Find the first input field present in the form that is
-            // not hidden and disabled and store it in a variable.
-            const firstInputElement = $("input:not(:hidden, :disabled)").first();
-            // Focus on the first input field in the form.
-            common.autofocus(firstInputElement);
-        } else { // If input field with errors is present.
-            // Find the input field having errors and stores it in a variable.
+        // Check if input field with an error is present.
+        if ($('.help-inline:not(:empty)').length !== 0) {
+            // Find the first input field with an error and focus it.
             const inputElementWithError = $('.help-inline:not(:empty)').first().parent().find('input');
-            // Focus on the input field having errors.
-            common.autofocus(inputElementWithError);
+            inputElementWithError.focus();
         }
 
         // reset error message displays
