@@ -1,4 +1,4 @@
-const assert = require("assert").strict;
+const assert = require("assert");
 const common = require('../puppeteer_lib/common');
 
 async function site_tests(page){

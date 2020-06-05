@@ -24,7 +24,7 @@ class CommonUtils {
                     '--no-sandbox', '--disable-setuid-sandbox',
                 ],
                 defaultViewport: { width: 1280, height: 1024 },
-                headless: true,
+                headless: true, slowMo: 250,
             });
         }
     }
@@ -293,7 +293,7 @@ class CommonUtils {
         // Pass a page instance to test so we can take
         // a screenshot of it when the test fails.
         const page = await this.get_page();
-        await page.addScriptTag({url: 'https://code.jquery.com/jquery-3.2.1.min.js'})
+        //await page.addScriptTag({url: 'https://code.jquery.com/jquery-3.2.1.min.js'})
         try {
             await test_function(page);
         } catch (e) {
