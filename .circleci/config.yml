@@ -12,7 +12,6 @@ aliases:
           dirs=(/srv/zulip-{npm,venv,emoji}-cache)
           sudo mkdir -p "${dirs[@]}"
           sudo chown -R circleci "${dirs[@]}"
-
   - &restore_cache_package_json
     restore_cache:
       keys:
@@ -35,7 +34,6 @@ aliases:
         sudo apt-get update
         # Install moreutils so we can use `ts` and `mispipe` in the following.
         sudo apt-get install -y moreutils
-
         # CircleCI sets the following in Git config at clone time:
         #   url.ssh://git@github.com.insteadOf https://github.com
         # This breaks the Git clones in the NVM `install.sh` we run
@@ -43,14 +41,11 @@ aliases:
         # TODO: figure out why that breaks, and whether we want it.
         #   (Is it an optimization?)
         rm -f /home/circleci/.gitconfig
-
         # This is the main setup job for the test suite
         mispipe "tools/ci/setup-backend" ts
-
         # Cleaning caches is mostly unnecessary in Circle, because
         # most builds don't get to write to the cache.
         # mispipe "scripts/lib/clean-unused-caches --verbose --threshold 0" ts
-
   - &save_cache_package_json
     save_cache:
       paths:
@@ -76,41 +71,28 @@ aliases:
         # Temporary hack till `sudo service redis-server start` gets fixes in Bionic. See
         # https://chat.zulip.org/#narrow/stream/3-backend/topic/Ubuntu.20bionic.20CircleCI
         sudo sed -i '/^bind/s/bind.*/bind 0.0.0.0/' /etc/redis/redis.conf
-
   - &run_backend_tests
     run:
       name: run backend tests
       command: |
         . /srv/zulip-py3-venv/bin/activate
         mispipe ./tools/ci/backend ts
-
   - &run_frontend_tests
     run:
       name: run frontend tests
       command: |
         . /srv/zulip-py3-venv/bin/activate
         mispipe ./tools/ci/frontend ts
-
   - &upload_coverage_report
     run:
      name: upload coverage report
      command: |
-       # codecov requires `.coverage` file to be stored in pwd for
-       # uploading coverage results.
-       mv /home/circleci/zulip/var/.coverage /home/circleci/zulip/.coverage
-
        . /srv/zulip-py3-venv/bin/activate
-       # TODO: Check that the next release of codecov doesn't
-       # throw find error.
-       # codecov==2.0.16 introduced a bug which uses "find"
-       # for locating files which is buggy on some platforms.
-       # It was fixed via https://github.com/codecov/codecov-python/pull/217
-       # and should get automatically fixed here once it's released.
-       # We cannot pin the version here because we need the latest version for uploading files.
-       # see https://community.codecov.io/t/http-400-while-uploading-to-s3-with-python-codecov-from-travis/1428/7
-       pip install codecov && codecov \
+       # codecov version is fixed here, since future versions of it
+       # use "find" for locating files which is buggy on some platforms.
+       # See https://github.com/codecov/codecov-python/issues/250
+       pip install codecov==2.0.15 && codecov \
          || echo "Error in uploading coverage reports to codecov.io."
-
   - &build_production
     run:
       name: build production
@@ -118,9 +100,7 @@ aliases:
         sudo apt-get update
         # Install moreutils so we can use `ts` and `mispipe` in the following.
         sudo apt-get install -y moreutils
-
         mispipe ./tools/ci/production-build ts
-
   - &production_extract_tarball
     run:
      name: production extract tarball
@@ -128,30 +108,25 @@ aliases:
       sudo apt-get update
       # Install moreutils so we can use `ts` and `mispipe` in the following.
       sudo apt-get install -y moreutils
-
       mispipe /tmp/production-extract-tarball ts
-
   - &install_production
     run:
      name: install production
      command: |
       sudo service rabbitmq-server restart
       sudo mispipe /tmp/production-install ts
-
   - &check_xenial_provision_error
     run:
       name: check tools/provision error message on xenial
       command: |
         ! tools/provision > >(tee provision.out)
         grep -Fqx 'CRITICAL:root:Unsupported platform: ubuntu 16.04' provision.out
-
   - &check_xenial_upgrade_error
     run:
       name: check scripts/lib/upgrade-zulip-stage-2 error message on xenial
       command: |
         ! sudo scripts/lib/upgrade-zulip-stage-2 2> >(tee upgrade.err >&2)
         grep -Fq 'upgrade-zulip-stage-2: Unsupported platform: ubuntu 16.04' upgrade.err
-
   - &notify_failure_status
     run:
       name: On fail
@@ -164,7 +139,6 @@ aliases:
           -X POST -i 'https://chat.zulip.org/api/v1/external/circleci?api_key='"$ZULIP_BOT_KEY"'&stream=automated%20testing&topic=master%20failing' \
           -d '{"payload": { "branch": "'"$CIRCLE_BRANCH"'", "reponame": "'"$CIRCLE_PROJECT_REPONAME"'", "status": "failed", "build_url": "'"$CIRCLE_BUILD_URL"'", "username": "'"$CIRCLE_USERNAME"'"}}'
         fi
-
 jobs:
   "bionic-backend-frontend-python3.6":
     docker:
@@ -193,7 +167,6 @@ jobs:
           command: |
             . /srv/zulip-py3-venv/bin/activate
             mispipe ./tools/test-locked-requirements ts
-
       - *run_frontend_tests
         # We only need to upload coverage reports on whichever platform
         # runs the frontend tests.
@@ -202,10 +175,6 @@ jobs:
       - store_artifacts:
           path: ./var/casper/
           destination: casper
-
-      - store_artifacts:
-          path: ./var/puppeteer/
-          destination: puppeteer
 
       - store_artifacts:
           path: ../../../tmp/zulip-test-event-log/
@@ -312,6 +281,37 @@ jobs:
       - *save_cache_package_json
       - *notify_failure_status
 
+  "puppeteer-stress-test":
+    docker:
+      # This is built from tools/circleci/images/bionic/Dockerfile .
+      # Bionic ships with Python 3.6.
+      - image: amanagr/circleci:bionic-python-2.test
+
+    working_directory: ~/zulip
+
+    steps:
+      - checkout
+      - *create_cache_directories
+      - *do_bionic_hack
+      - *restore_cache_package_json
+      - *restore_cache_requirements
+      - *restore_emoji_cache
+
+      - run:
+          name: Install dependencies
+          command: |
+            rm -f /home/circleci/.gitconfig
+            tools/provision 
+      
+      - run:
+          name: Puppeteer Stress Test
+          command: |
+            . /srv/zulip-py3-venv/bin/activate
+            tools/test-js-with-puppeteer
+      - store_artifacts:
+          path: ./var/puppeteer/
+          destination: puppeteer
+
   "focal-production-install-python3.8":
     docker:
         # This is built from tools/circleci/images/focal/Dockerfile.
@@ -338,13 +338,4 @@ workflows:
   version: 2
   build:
     jobs:
-      - "bionic-backend-frontend-python3.6"
-      - "bionic-production-build-python3.6"
-      - "focal-backend-python3.8"
-      - "xenial-legacy"
-      - "bionic-production-install-python3.6":
-            requires:
-                - "bionic-production-build-python3.6"
-      # - "focal-production-install-python3.8":
-      #       requires:
-      #           - "bionic-production-build-python3.6"
+      - puppeteer-stress-test
