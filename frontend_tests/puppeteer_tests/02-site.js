@@ -1,10 +1,15 @@
 const assert = require("assert");
 const common = require('../puppeteer_lib/common');
 
+function sleep(ms) {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
+
 async function site_tests(page){
     await common.log_in(page);
     await page.waitForSelector("#zhome", {visible: true})
     console.log("Sanity-checking existing messages");
+    await sleep(5000)
     const msg = await common.get_rendered_messages(page, 'zhome');
 
     msg.headings.forEach((heading) => {

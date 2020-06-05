@@ -24,7 +24,7 @@ class CommonUtils {
                     '--no-sandbox', '--disable-setuid-sandbox',
                 ],
                 defaultViewport: { width: 1280, height: 1024 },
-                headless: true, slowMo: 250,
+                headless: true,
             });
         }
     }
