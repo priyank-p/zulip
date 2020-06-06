@@ -104,7 +104,10 @@ class CommonUtils {
             password: credentials.password,
         };
         await this.fill_form(page, '#login_form', params);
-        await page.$eval('#login_form', form => form.submit());
+        await Promise.all([
+            page.waitForNavigation({ waitUntil: 'load' }),
+            page.$eval('#login_form', form => form.submit())
+        ]);
     }
 
     async log_out(page) {

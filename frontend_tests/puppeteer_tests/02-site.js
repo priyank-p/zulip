@@ -2,10 +2,10 @@ const assert = require("assert");
 const common = require('../puppeteer_lib/common');
 
 async function site_tests(page){
+    page.on('console', msg => console.log('LOG', msg.text()));
     await common.log_in(page);
     await page.waitForSelector("#zhome", {visible: true})
     console.log("Sanity-checking existing messages");
-    await page.waitFor(100)
     const msg = await common.get_rendered_messages(page, 'zhome');
 
     msg.headings.forEach((heading) => {
@@ -53,7 +53,7 @@ async function site_tests(page){
     await common.send_multiple_messages(page, [
         { stream: 'Verona', subject: 'frontend test',
           content: 'test verona D' },
-    
+
         { recipient: 'cordelia@zulip.com, hamlet@zulip.com',
           content: 'personal D' },
     ]);
