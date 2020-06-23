@@ -32,7 +32,7 @@ package-lock.json
 /.dmypy.json
 
 # Dockerfiles generated for CircleCI
-/tools/circleci/images
+/tools/github_actions/images
 
 # Generated i18n data
 /locale/en
