@@ -246,3 +246,50 @@ jobs:
         name: production-tarball
         path: ./var/production-tarball/*
 
+  bionic_production_install:
+    name: Bionic Production Install
+    needs: bionic_production_build
+    runs-on: ubuntu-latest
+
+    # This docker image was created by a generated Dockerfile at:
+    #   tools/github_actions/images/bionic/Dockerfile
+    container: mepriyank/actions:bionic
+
+    steps:
+    - name: Update permission
+      run: sudo chown -R github .
+
+    - name: Retrive production tarball
+      uses: actions/download-artifact@v2
+      with:
+        name: production-tarball
+        path: /tmp
+
+    - name: Create cache directories
+      run: |
+        dirs=(/srv/zulip-{npm,venv,emoji}-cache)
+        sudo mkdir -p "${dirs[@]}"
+        sudo chown -R github "${dirs[@]}"
+
+    - name: Restore node_modules cache
+      uses: actions/cache@v2
+      with:
+       path: /srv/zulip-npm-cache
+       key: v1-yarn-deps-{{ hashFiles("package.json") }}-{{ hashFiles("yarn.lock"); }}
+       restore-keys: v1-yarn-deps-
+
+    - name: Do Bionic hack
+      run: |
+        # Temporary hack till `sudo service redis-server start` gets fixes in Bionic. See
+        # https://chat.zulip.org/#narrow/stream/3-backend/topic/Ubuntu.20bionic.20CircleCI
+        sudo sed -i '/^bind/s/bind.*/bind 0.0.0.0/' /etc/redis/redis.conf
+
+    - name: Extract production tarball
+      run: |
+        sudo apt-get update
+
+        # Install moreutils so we can use `ts` and `mispipe` in the following.
+        sudo apt-get install -y moreutils
+
+        mispipe "/tmp/production-extract-tarball 2>&1" ts
+
