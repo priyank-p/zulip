@@ -23,6 +23,8 @@ jobs:
       HOME: /home/github/
 
     steps:
+    - name: Print job name
+      run: echo ${{ github.job }} 
     # Upgrade git before using checkout actions because it downloads
     # the code using Rest API if git version is less than v2.18,
     # which will cause errors in tests and provision.
