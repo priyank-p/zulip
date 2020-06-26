@@ -60,7 +60,7 @@ jobs:
       uses: actions/cache@v2
       with:
        path: /srv/zulip-npm-cache
-       key: v1-yarn-deps-{{ hashFiles("package.json") }}-{{ hashFiles("yarn.lock"); }}
+       key: v1-yarn-deps-{{ github.job }}-{{ hashFiles("package.json") }}-{{ hashFiles("yarn.lock"); }}
        restore-keys: v1-yarn-deps-
 
     - name: Restore python cache
