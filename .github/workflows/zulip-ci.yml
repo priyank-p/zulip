@@ -163,6 +163,9 @@ jobs:
       HOME: /home/github/
 
     steps:
+    - name: Print job name
+      run: echo ${{ github.job }} 
+
     - name: Update permission
       run: sudo chown -R github .
 
