@@ -23,8 +23,19 @@ jobs:
       HOME: /home/github/
 
     steps:
-    - name: Print job name
-      run: echo ${{ github.job }} 
+    - name: Run zulip services start twice
+      run: |
+        sudo service redis-server start
+        sudo service memcached start
+        sudo service rabbitmq-server start
+        sudo service postgresql start
+        
+        echo "Doing it again..."
+        sudo service redis-server start
+        sudo service memcached start
+        sudo service rabbitmq-server start
+        sudo service postgresql start
+      
     # Upgrade git before using checkout actions because it downloads
     # the code using Rest API if git version is less than v2.18,
     # which will cause errors in tests and provision.
@@ -163,8 +174,18 @@ jobs:
       HOME: /home/github/
 
     steps:
-    - name: Print job name
-      run: echo ${{ github.job }} 
+    - name: Run zulip services start twice
+      run: |
+        sudo service redis-server start
+        sudo service memcached start
+        sudo service rabbitmq-server start
+        sudo service postgresql start
+        
+        echo "Doing it again..."
+        sudo service redis-server start
+        sudo service memcached start
+        sudo service rabbitmq-server start
+        sudo service postgresql start
 
     - name: Update permission
       run: sudo chown -R github .
