@@ -7,9 +7,11 @@ import HtmlWebpackPlugin from 'html-webpack-plugin';
 import MiniCssExtractPlugin from 'mini-css-extract-plugin';
 import OptimizeCssAssetsPlugin from 'optimize-css-assets-webpack-plugin';
 import TerserPlugin from 'terser-webpack-plugin';
+
 // The devServer member of webpack.Configuration is managed by the
-// webpack-dev-server package. We are only importing the type here.
-import _webpackDevServer from 'webpack-dev-server';
+// webpack-dev-server package.
+import type _webpackDevServer from 'webpack-dev-server';
+
 import assets from './webpack.assets.json';
 import webpack from 'webpack';
 
@@ -26,7 +28,7 @@ export default (env?: string): webpack.Configuration[] => {
                 // directory for no reason while we only need
                 // it to watch the static/ directory.
                 return path.includes('static/');
-            }
+            },
         },
         module: {
             rules: [
