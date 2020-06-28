@@ -20,6 +20,14 @@ export default (env?: string): webpack.Configuration[] => {
         mode: production ? "production" : "development",
         context: resolve(__dirname, "../"),
         entry: assets,
+        watchOptions: {
+            ignored(path: string) {
+                // Webpack tries to watch the entire zulip
+                // directory for no reason while we only need
+                // it to watch the static/ directory.
+                return path.includes('static/');
+            }
+        },
         module: {
             rules: [
                 // Generate webfont
