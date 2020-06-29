@@ -403,6 +403,12 @@ def main(options: argparse.Namespace) -> "NoReturn":
         run_as_root(["service", "memcached", "start"])
         run_as_root(["service", "rabbitmq-server", "start"])
         run_as_root(["service", "postgresql", "start"])
+        
+        print('TEST: Starting the services again...')
+        run_as_root(["service", "redis-server", "start"])
+        run_as_root(["service", "memcached", "start"])
+        run_as_root(["service", "rabbitmq-server", "start"])
+        run_as_root(["service", "postgresql", "start"])
     elif "fedora" in os_families():
         # These platforms don't enable and start services on
         # installing their package, so we do that here.
