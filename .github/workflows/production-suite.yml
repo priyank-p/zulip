@@ -125,11 +125,22 @@ jobs:
           name: production-tarball
           path: /tmp
 
-      - name: Add required permissions
-        # This is the GitHub Actions specific cache directory the
-        # the current github user must be able to access for the
-        # cache action to work. It is owned by root currently.
-        run: sudo chmod -R 0777 /__w/_temp/ && mkdir /home/github/zulip
+      - name: Add required permissions and setup
+        run: |
+          # This is the GitHub Actions specific cache directory the
+          # the current github user must be able to access for the
+          # cache action to work. It is owned by root currently.
+          sudo chmod -R 0777 /__w/_temp/
+
+          # Create the zulip directory that the tools/ci/ scripts needs
+          mkdir -p /home/github/zulip
+
+          # Since actions/download-artifact@v2 loses all the permissions
+          # of the tarball uploaded by the upload artifact fix thoses.
+          chmod +x /tmp/production-extract-tarball
+          chmod +x /tmp/production-upgrade-pg
+          chmod +x /tmp/production-install
+          chmod +x /tmp/production-verify
 
       - name: Create cache directories
         run: |
@@ -159,28 +170,19 @@ jobs:
           echo "export SASL_CONF_PATH=/etc/sasl2" | sudo tee - a /etc/default/memcached
 
       - name: Production extract tarball
-        run: |
-          # Since download-artifact unzips the artifact uploaded
-          # in build production job in such a way it loses permissions
-          chmod +x /tmp/production-extract-tarball
-          mispipe "/tmp/production-extract-tarball 2>&1" ts
+        run: mispipe "/tmp/production-extract-tarball 2>&1" ts
 
       - name: Install production
         run: |
-          chmod +x /tmp/production-install
           sudo service rabbitmq-server restart
           sudo mispipe "/tmp/production-install 2>&1" ts
 
       - name: Verify install
-        run: |
-          chmod +x /tmp/production-verify
-          sudo mispipe "/tmp/production-verify 2>&1" ts
+        run: sudo mispipe "/tmp/production-verify 2>&1" ts
 
       - name: Upgrade postgresql
         if: ${{ matrix.is_bionic }}
-        run: |
-          chmod +x /tmp/production-upgrade-pg
-          sudo mispipe "/tmp/production-upgrade-pg 2>&1" ts
+        run: sudo mispipe "/tmp/production-upgrade-pg 2>&1" ts
 
       - name: Verify install after upgrading postgresql
         run: sudo mispipe "/tmp/production-verify 2>&1" ts
