@@ -20,14 +20,21 @@ class CommonUtils {
                 // that is invisible because it is meant for something else
                 // e.g. private message input typeahead is diffrent from topic
                 // input typeahead but both can be present in the dom.
+                page.on('console', msg => console.log('LOG:', msg.text()));
+                console.log('Waiting for typehead...');
                 await page.waitForFunction(() => {
                     const selector = ".typeahead-menu .active a:visible";
+                    console.log('Typhead menu elements:', $('.typhead-menu').length);
                     return $(selector).length !== 0;
                 });
 
+                console.log('Clicking the button.')
+                await common.screenshot(page, 'before-click');
                 await page.evaluate(() => {
                     $(".typeahead-menu .active a:visible").click();
                 });
+                console.log('Done.');
+                await common.screenshot(page, 'after-click');
             },
 
             async expect(page, expected) {
