@@ -8,6 +8,7 @@ defaults:
 
 jobs:
   tests:
+    if: ${{ false }}
     strategy:
       fail-fast: false
       matrix:

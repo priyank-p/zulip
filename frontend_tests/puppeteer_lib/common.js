@@ -12,7 +12,8 @@ class CommonUtils {
         this.realm_url = "http://zulip.zulipdev.com:9981/";
         this.pm_recipient = {
             async set(page, recipient) {
-                await page.type("#private_message_recipient", recipient);
+                const half_email = recipient.substring(0, recipient.length / 2);
+                await page.type("#private_message_recipient", half_email);
 
                 // We use jQuery here because we need to use it's :visible
                 // pseudo selector to actually wait for typeahead item that
@@ -24,13 +25,14 @@ class CommonUtils {
                 console.log('Waiting for typehead...');
                 await page.waitForFunction(() => {
                     const selector = ".typeahead-menu .active a:visible";
-                    console.log('Typhead menu elements:', $('.typhead-menu').length);
+                    console.log('Typhead menu elements:', $('.typeahead-menu').length);
                     return $(selector).length !== 0;
                 });
 
                 console.log('Clicking the button.')
                 await common.screenshot(page, 'before-click');
                 await page.evaluate(() => {
+                    console.log('Clicking on: ', $(".typeahead-menu .active a:visible").length);
                     $(".typeahead-menu .active a:visible").click();
                 });
                 console.log('Done.');

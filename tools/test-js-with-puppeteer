@@ -80,7 +80,7 @@ def run_tests(files: Iterable[str], external_host: str) -> None:
             response = input('Press Enter to run tests, "q" to quit: ')
             ret = 1
             failed_test_num = 0
-            while response != 'q' and failed_test_num != -1:
+            while response != 'q':
                 ret, failed_test_num = run_tests(failed_test_num)
                 if ret != 0:
                     response = input('Tests failed. Press Enter to re-run tests, "q" to quit: ')
