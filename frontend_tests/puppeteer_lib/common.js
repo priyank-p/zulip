@@ -31,10 +31,11 @@ class CommonUtils {
 
                 console.log('Clicking the button.')
                 await common.screenshot(page, 'before-click');
-                await page.evaluate(() => {
-                    console.log('Clicking on: ', $(".typeahead-menu .active a:visible").length);
-                    $(".typeahead-menu .active a:visible").click();
-                });
+                // await page.evaluate(() => {
+                //     console.log('Clicking on: ', $(".typeahead-menu .active a:visible").length);
+                //     $(".typeahead-menu .active a:visible").click();
+                // });
+                await page.keyboard.press('Enter');
                 console.log('Done.');
                 await common.screenshot(page, 'after-click');
             },
