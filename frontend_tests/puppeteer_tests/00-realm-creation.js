@@ -42,7 +42,7 @@ async function realm_creation_tests(page) {
 
     // Make sure the realm creation page is loaded correctly by
     // checking the text in <p> tag under pitch class is as expected.
-    await page.waitForSelector(".pitch");
+    await page.waitForSelector(".pitch", {visible: true});
     const text_in_pitch = await page.evaluate(() => document.querySelector(".pitch p").innerText);
     assert(text_in_pitch === "You’re almost there! We just need you to do one last thing.");
 
