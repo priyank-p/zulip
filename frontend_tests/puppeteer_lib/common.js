@@ -476,6 +476,13 @@ class CommonUtils {
         // Pass a page instance to test so we can take
         // a screenshot of it when the test fails.
         const page = await this.get_page();
+
+        // Increase the navigation timeout from 30 to 45s. This
+        // is mostly needed for GitHub Actions's Stress Test workflow
+        // which runs bunch of test back to back and overloads the
+        // machine to slow down lead to navigation timeouyts.
+        page.setDefaultNavigationTimeout(45 * 1000);
+
         try {
             await test_function(page);
             await screenCapture.stopRecording(page);
