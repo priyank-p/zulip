@@ -155,6 +155,8 @@ class CommonUtils {
                 });
                 await page.type(name_selector, params[name]);
             }
+
+            await this.screenshot(page, `filled-${name}`);
         }
     }
 
