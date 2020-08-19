@@ -348,7 +348,8 @@
                 "set_global": false,
                 "window": false,
                 "with_field": false,
-                "zrequire": false
+                "zrequire": false,
+                "reset_module": false
             },
             "rules": {
                 "no-sync": "off"
