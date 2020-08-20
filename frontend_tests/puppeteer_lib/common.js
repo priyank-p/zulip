@@ -172,7 +172,10 @@ class CommonUtils {
         if (this.fullname[name] !== undefined) {
             name = this.fullname[name];
         }
-        return await page.evaluate((name) => people.get_user_id_from_name(name), name);
+        return await page.evaluate((name) => {
+            const people = require("./static/js/people.js");
+            return people.get_user_id_from_name(name);
+        }, name);
     }
 
     async get_internal_email_from_name(page, name) {
@@ -180,6 +183,7 @@ class CommonUtils {
             name = this.fullname[name];
         }
         return await page.evaluate((fullname) => {
+            const people = require("./static/js/people.js");
             const user_id = people.get_user_id_from_name(fullname);
             return people.get_by_user_id(user_id).email;
         }, name);

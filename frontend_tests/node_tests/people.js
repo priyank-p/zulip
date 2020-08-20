@@ -4,9 +4,11 @@ const _ = require("lodash");
 const moment = require("moment-timezone");
 const rewiremock = require("rewiremock/node");
 
-rewiremock.proxy(() => zrequire("people"), {
+let people;
+rewiremock.proxy(() => (people = zrequire("people")), {
     "moment-timezone": () => moment("20130208T080910"),
 });
+
 set_global("message_store", {});
 set_global("page_params", {});
 set_global("settings_data", {});

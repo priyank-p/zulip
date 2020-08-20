@@ -386,6 +386,7 @@ exports.get_form_field_value = function (selector) {
 exports.get_user_id = function (email) {
     return casper.evaluate(
         function (email) {
+            const people = require("./static/js/people.js");
             return people.get_user_id(email);
         },
         {
