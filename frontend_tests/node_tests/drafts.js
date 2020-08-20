@@ -36,15 +36,14 @@ set_global("stream_data", {
         return "#FFFFFF";
     },
 });
-set_global("people", {
-    // Mocking get_by_email function, here we are
-    // just returning string before `@` in email
-    get_by_email(email) {
-        return {
-            full_name: email.split("@")[0],
-        };
-    },
+
+// Mocking get_by_email function, here we are
+// just returning string before `@` in email
+const people = zrequire("people");
+people.get_by_email = (email) => ({
+    full_name: email.split("@")[0],
 });
+
 set_global("markdown", {
     apply_markdown: noop,
 });

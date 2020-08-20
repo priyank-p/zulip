@@ -26,12 +26,11 @@ set_global("user_groups", {
     add: noop,
 });
 set_global("ui_report", {});
-set_global("people", {
-    my_current_user_id: noop,
-    small_avatar_url_for_person() {
-        return "http://example.com/example.png";
-    },
-});
+
+const people = zrequire("people");
+people.my_current_user_id = noop;
+people.small_avatar_url_for_person = () => "http://example.com/example.png";
+
 set_global("page_params", {});
 
 function reset_test_setup(pill_container_stub) {

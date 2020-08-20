@@ -2,6 +2,8 @@
 
 const moment = require("moment");
 
+const people = require("./people");
+
 /*
     rendered_markdown
 
