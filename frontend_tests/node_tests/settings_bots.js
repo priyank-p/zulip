@@ -23,7 +23,7 @@ const bot_data_params = {
     ],
 };
 
-set_global("avatar", {});
+const avatar = zrequire("avatar");
 
 set_global("$", global.make_zjquery());
 

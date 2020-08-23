@@ -15,7 +15,6 @@ declare let admin: any;
 declare let alert_words: any;
 declare let alert_words_ui: any;
 declare let attachments_ui: any;
-declare let avatar: any;
 declare let billing: any;
 declare let blueslip: any;
 declare let bot_data: any;

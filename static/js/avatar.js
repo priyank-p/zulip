@@ -79,5 +79,3 @@ exports.build_user_avatar_widget = function (upload_function) {
         );
     }
 };
-
-window.avatar = exports;
