@@ -9,7 +9,7 @@ $(() => {
     } else {
         csrf_token = undefined;
     }
-    window.csrf_token = csrf_token;
+    exports.csrf_token = csrf_token;
 
     if (csrf_token === undefined) {
         return;
