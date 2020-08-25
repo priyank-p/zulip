@@ -140,5 +140,5 @@ class ListCursor {
         this.go_to(key);
     }
 }
+
 module.exports = ListCursor;
-window.ListCursor = ListCursor;

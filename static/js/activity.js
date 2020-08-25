@@ -2,6 +2,7 @@
 
 const _ = require("lodash");
 
+const ListCursor = require("./list_cursor");
 const people = require("./people");
 
 /*
