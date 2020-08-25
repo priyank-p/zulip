@@ -121,4 +121,3 @@ class UserSearch {
 }
 
 module.exports = UserSearch;
-window.UserSearch = UserSearch;
