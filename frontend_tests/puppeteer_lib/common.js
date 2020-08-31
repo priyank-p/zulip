@@ -454,6 +454,12 @@ class CommonUtils {
         // Pass a page instance to test so we can take
         // a screenshot of it when the test fails.
         const page = await this.get_page();
+
+        // Log browser's console logs.
+        page.on("console", (msg) => {
+            console.log("Page log:", msg.text());
+        });
+
         try {
             await test_function(page);
         } catch (e) {
